@@ -38,7 +38,7 @@
   <!-- Card Body -->
   <div class="card-body">
     Name: <%=patient.name%> <br />
-    Age: <%=patient.birthdate%><br />
+    Birthdate: <%=date%><br />
     Address:<%=patient.address%> <br />
     Last Appointment: Lorem <br>
     <form action="/diagnosis" method="post">
@@ -65,11 +65,15 @@
       <h6 class="m-0 font-weight-bold text-primary">History</h6>
     </a>
     <!-- Card Content - Collapse -->
+  <%patient.history.forEach(function(history){%>
     <div class="collapse show" id="collapseCardExample">
       <div class="card-body">
-        Date: <br>
-        Diagnosis:
+        Date: <%=history.Date%><br>
+        Diagnosis: <%=history.Diagnosis%>
       </div>
   </div>
+  <%})%>
+    
+  
 </div>
 <%- include('partials/footer'); -%>

@@ -2,6 +2,7 @@ const express = require("express");
 let ejs = require("ejs");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const moment = require("moment");
 
 mongoose.connect("mongodb://localhost:27017/clinicDB", {
   useNewUrlParser: true,
@@ -42,7 +43,9 @@ app.get("/patients", function (req, res) {
 app.get("/details/:id", function (req, res) {
   const requestedpatient = req.params.id;
   Patient.findOne({ _id: requestedpatient }, function (err, patient) {
-    res.render("details", { patient: patient });
+    let birthdate = moment(patient.birthdate);
+    birthdate = birthdate.format("DD/MM/YY");
+    res.render("details", { patient: patient, date: birthdate });
   });
 });
 app.get("/register-patient", function (req, res) {
@@ -61,8 +64,19 @@ app.post("/new-patient", function (req, res) {
 });
 
 app.post("/diagnosis", function (req, res) {
-  Patient.updateOne({ _id: req.body.id }, { Diagnosis: req.body.diagnosis });
-  res.redirect("/");
+  const diagnosis = { Date: "4/6/21", Diagnosis: req.body.diagnosis };
+  Patient.findOneAndUpdate(
+    { _id: req.body.id },
+    { $push: { history: diagnosis } },
+    function (error, success) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(success);
+      }
+    }
+  );
+  res.redirect("/patients");
 });
 
 app.listen(3000, function () {
