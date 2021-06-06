@@ -40,7 +40,7 @@ app.get("/patients", function (req, res) {
     res.render("tables", { found: found });
   });
 });
-app.get("/details/:id", function (req, res) {
+app.get("/patients/:id", function (req, res) {
   const requestedpatient = req.params.id;
   Patient.findOne({ _id: requestedpatient }, function (err, patient) {
     let birthdate = moment(patient.birthdate);
@@ -79,6 +79,9 @@ app.post("/diagnosis", function (req, res) {
   res.redirect("/patients");
 });
 
+app.get("*", function (req, res) {
+  res.render("404");
+});
 app.listen(3000, function () {
   console.log("Server Running");
 });

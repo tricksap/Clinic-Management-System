@@ -32,6 +32,8 @@
         style=""
       >
         <a class="dropdown-item" href="#">Edit</a>
+        <a class="dropdown-item text-danger" href="#">Delete</a>
+
       </div>
     </div>
   </div>
@@ -40,7 +42,6 @@
     Name: <%=patient.name%> <br />
     Birthdate: <%=date%><br />
     Address:<%=patient.address%> <br />
-    Last Appointment: Lorem <br>
     <form action="/diagnosis" method="post">
     <input type="hidden" name="id" value="<%=patient._id%>">
     <textarea class="form-control" rows="3" name="diagnosis"></textarea>
@@ -62,13 +63,27 @@
       role="button"
       aria-expanded="true"
       aria-controls="collapseCardExample"
-      <h6 class="m-0 font-weight-bold text-primary">History</h6>
+    <h6>History</h6 >
+      
     </a>
     <!-- Card Content - Collapse -->
-  <%patient.history.forEach(function(history){%>
+    <%let reverse = patient.history.reverse()%>
+    <%reverse.forEach(function(history){%>
     <div class="collapse show" id="collapseCardExample">
+      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-secondary"> Date:<%=history.Date%></h6>
+        <div class="dropdown no-arrow">
+            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                <div class="dropdown-header">Actions</div>
+                <a class="dropdown-item" href="#">Edit</a>
+                <a class="dropdown-item text-danger" href="#">Delete</a>
+            </div>
+        </div>
+    </div>
       <div class="card-body">
-        Date: <%=history.Date%><br>
         Diagnosis: <%=history.Diagnosis%>
       </div>
   </div>
