@@ -13,14 +13,19 @@ mongoose.connect("mongodb://localhost:27017/clinicDB", {
 
 const app = express();
 
-const patientSchema = {
+const diagnosisSchema = new mongoose.Schema({
+  date: Date,
+  diagnosis: String,
+});
+
+const patientSchema = new mongoose.Schema({
   name: String,
   gender: String,
   birthdate: Date,
   address: String,
-  history: [{ Date: Date, Diagnosis: String }],
-};
-
+  history: [diagnosisSchema],
+});
+const Diagnosis = mongoose.model("diagnosis", diagnosisSchema);
 const Patient = mongoose.model("patient", patientSchema);
 
 app.set("view engine", "ejs");
@@ -91,22 +96,6 @@ app.post("/create", function (req, res) {
   res.redirect("/patients");
 });
 
-app.post("/diagnosis", function (req, res) {
-  const diagnosis = { Date: "4/6/21", Diagnosis: req.body.diagnosis };
-  Patient.findOneAndUpdate(
-    { _id: req.body.id },
-    { $push: { history: diagnosis } },
-    function (error, success) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log(success);
-      }
-    }
-  );
-  res.redirect("/patients");
-});
-
 app.post("/delete-patient", function (req, res) {
   Patient.deleteOne({ _id: req.body.id }, function (error, success) {
     if (error) {
@@ -118,7 +107,35 @@ app.post("/delete-patient", function (req, res) {
   res.redirect("/patients");
 });
 
-app.get("/diagnosis-edit/:id", function (req, res) {});
+app.post("/diagnosis", function (req, res) {
+  const diagnosis = new Diagnosis({
+    date: moment().format("YYYY-MM-DD"),
+    diagnosis: req.body.diagnosis,
+  });
+  diagnosis.save();
+  console.log(req.body.id);
+  Patient.updateOne(
+    { _id: req.body.id },
+    { $push: { history: diagnosis } },
+    function (err, success) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(success);
+      }
+    }
+  );
+  res.redirect("/patients");
+});
+
+// app.get("/diagnosis/:id", function (req, res) {
+//   history.findOne(
+//     { "history._id": req.params.id, "history._id": req.params.id },
+//     function (err, result) {
+//       res.send(result);
+//     }
+//   );
+// });
 
 app.get("*", function (req, res) {
   res.render("404");
