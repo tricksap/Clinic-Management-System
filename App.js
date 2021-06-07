@@ -44,7 +44,7 @@ app.get("/patients/:id", function (req, res) {
   const requestedpatient = req.params.id;
   Patient.findOne({ _id: requestedpatient }, function (err, patient) {
     let birthdate = moment(patient.birthdate);
-    birthdate = birthdate.format("DD/MM/YY");
+    birthdate = birthdate.format("DD/MM/YYYY");
     res.render("details", { patient: patient, date: birthdate });
   });
 });
@@ -60,7 +60,7 @@ app.post("/new-patient", function (req, res) {
     address: req.body.address,
   });
   patient.save();
-  res.redirect("/home");
+  res.redirect("/patients");
 });
 
 app.post("/diagnosis", function (req, res) {
@@ -68,6 +68,45 @@ app.post("/diagnosis", function (req, res) {
   Patient.findOneAndUpdate(
     { _id: req.body.id },
     { $push: { history: diagnosis } },
+    function (error, success) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(success);
+      }
+    }
+  );
+  res.redirect("/patients");
+});
+
+app.post("/delete-patient", function (req, res) {
+  Patient.deleteOne({ _id: req.body.id }, function (error, success) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log(success);
+    }
+  });
+  res.redirect("/patients");
+});
+
+app.get("/patient-edit/:id", function (req, res) {
+  Patient.findOne({ _id: req.params.id }, function (err, patient) {
+    let birthdate = moment(patient.birthdate);
+    birthdate = birthdate.format("YYYY-MM-DD");
+    res.render("patient-edit", { patient: patient, birthdate: birthdate });
+  });
+});
+
+app.post("/patient-edit", function (req, res) {
+  Patient.updateOne(
+    { _id: req.body.id },
+    {
+      name: req.body.name,
+      birthdate: req.body.birthdate,
+      gender: req.body.gender,
+      address: req.body.address,
+    },
     function (error, success) {
       if (error) {
         console.log(error);
