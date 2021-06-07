@@ -48,11 +48,39 @@ app.get("/patients/:id", function (req, res) {
     res.render("details", { patient: patient, date: birthdate });
   });
 });
-app.get("/register-patient", function (req, res) {
+app.get("/patient/edit/:id", function (req, res) {
+  Patient.findOne({ _id: req.params.id }, function (err, patient) {
+    let birthdate = moment(patient.birthdate);
+    birthdate = birthdate.format("YYYY-MM-DD");
+    res.render("patient-edit", { patient: patient, birthdate: birthdate });
+  });
+});
+
+app.post("/patient/edit/:id", function (req, res) {
+  Patient.updateOne(
+    { _id: req.params.id },
+    {
+      name: req.body.name,
+      birthdate: req.body.birthdate,
+      gender: req.body.gender,
+      address: req.body.address,
+    },
+    function (error, success) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(success);
+      }
+    }
+  );
+  res.redirect("/patients");
+});
+
+app.get("/create", function (req, res) {
   res.render("NewPatient");
 });
 
-app.post("/new-patient", function (req, res) {
+app.post("/create", function (req, res) {
   const patient = new Patient({
     name: req.body.name,
     birthdate: req.body.birthdate,
@@ -90,33 +118,7 @@ app.post("/delete-patient", function (req, res) {
   res.redirect("/patients");
 });
 
-app.get("/patient-edit/:id", function (req, res) {
-  Patient.findOne({ _id: req.params.id }, function (err, patient) {
-    let birthdate = moment(patient.birthdate);
-    birthdate = birthdate.format("YYYY-MM-DD");
-    res.render("patient-edit", { patient: patient, birthdate: birthdate });
-  });
-});
-
-app.post("/patient-edit", function (req, res) {
-  Patient.updateOne(
-    { _id: req.body.id },
-    {
-      name: req.body.name,
-      birthdate: req.body.birthdate,
-      gender: req.body.gender,
-      address: req.body.address,
-    },
-    function (error, success) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log(success);
-      }
-    }
-  );
-  res.redirect("/patients");
-});
+app.get("/diagnosis-edit/:id", function (req, res) {});
 
 app.get("*", function (req, res) {
   res.render("404");
