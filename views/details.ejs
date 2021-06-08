@@ -76,7 +76,7 @@
     <%reverse.forEach(function(history){%>
     <div class="collapse show" id="collapseCardExample">
       <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-      <h6 class="m-0 font-weight-bold text-secondary"> Date:<%=history.date%></h6>
+      <h6 class="m-0 font-weight-bold text-secondary"> Date: <%= history.date.toLocaleDateString() %></h6>
       <div class="dropdown no-arrow">
             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -98,7 +98,7 @@
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <form action="/delete-patient" method="POST">
+    <form action="/patients/<%= patient._id %>?_method=DELETE" method="POST">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Confirm Delete</h5>
@@ -108,11 +108,10 @@
       </div>
       <div class="modal-body">
         Are you sure you want to delete this patient? 
-        <input type="hidden" name="id" value="<%=patient._id%>">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-danger btn-icon-split">
+        <button ton type="submit" class="btn btn-danger btn-icon-split">
           <span class="icon text-white-50">
               <i class="fas fa-trash"></i>
           </span>

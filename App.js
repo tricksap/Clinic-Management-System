@@ -3,6 +3,7 @@ let ejs = require("ejs");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const moment = require("moment");
+var methodOverride = require("method-override");
 
 mongoose.connect("mongodb://localhost:27017/clinicDB", {
   useNewUrlParser: true,
@@ -32,6 +33,7 @@ app.set("view engine", "ejs");
 app.use(express.static("public/"));
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
 
 app.get("/", function (req, res) {
   res.render("login");
@@ -53,6 +55,19 @@ app.get("/patients/:id", function (req, res) {
     res.render("details", { patient: patient, date: birthdate });
   });
 });
+
+app.delete("/patients/:id", function (req, res) {
+  console.log(req.params.id);
+  Patient.deleteOne({ _id: req.params.id }, function (error, success) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log(success);
+    }
+  });
+  res.redirect("/patients");
+});
+
 app.get("/patient/edit/:id", function (req, res) {
   Patient.findOne({ _id: req.params.id }, function (err, patient) {
     let birthdate = moment(patient.birthdate);
@@ -61,7 +76,8 @@ app.get("/patient/edit/:id", function (req, res) {
   });
 });
 
-app.post("/patient/edit/:id", function (req, res) {
+app.put("/patient/edit/:id", function (req, res) {
+  console.log("asdsadsad");
   Patient.updateOne(
     { _id: req.params.id },
     {
@@ -93,17 +109,6 @@ app.post("/create", function (req, res) {
     address: req.body.address,
   });
   patient.save();
-  res.redirect("/patients");
-});
-
-app.post("/delete-patient", function (req, res) {
-  Patient.deleteOne({ _id: req.body.id }, function (error, success) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log(success);
-    }
-  });
   res.redirect("/patients");
 });
 
@@ -140,7 +145,7 @@ app.get("/diagnosis/edit/:patient_id/:diagnosis_id", function (req, res) {
   });
 });
 // tbe
-app.post("/diagnosis/edit/:patient_id/:diagnosis_id", function (req, res) {
+app.put("/diagnosis/edit/:patient_id/:diagnosis_id", function (req, res) {
   Diagnosis.updateOne(
     { _id: req.params.diagnosis_id },
     {

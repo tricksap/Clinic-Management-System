@@ -1,7 +1,7 @@
 <%- include('partials/header'); -%>
 
 <div class="card shadow mb-4">
-  <form action="/diagnosis/edit/<%=patient_id%>/<%=result._id%>" method="post">
+  <form action="/diagnosis/edit/<%=patient_id%>/<%=result._id%>?_method=PUT" method="post">
     <div class="card-body">
       <div class="form-row">
         <div class="form-group col-md-10">
@@ -12,6 +12,7 @@
               class="form-control"
               name="date"
               value="<%=date%>"
+              readonly
 
             />
           </div>
