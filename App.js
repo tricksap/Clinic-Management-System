@@ -128,14 +128,47 @@ app.post("/diagnosis", function (req, res) {
   res.redirect("/patients");
 });
 
-// app.get("/diagnosis/:id", function (req, res) {
-//   history.findOne(
-//     { "history._id": req.params.id, "history._id": req.params.id },
-//     function (err, result) {
-//       res.send(result);
-//     }
-//   );
-// });
+app.get("/diagnosis/edit/:patient_id/:diagnosis_id", function (req, res) {
+  Diagnosis.findOne({ _id: req.params.diagnosis_id }, function (err, result) {
+    let date = moment(result.date);
+    date = date.format("YYYY-MM-DD");
+    res.render("diagnosis-edit", {
+      result: result,
+      date: date,
+      patient_id: req.params.patient_id,
+    });
+  });
+});
+// tbe
+app.post("/diagnosis/edit/:patient_id/:diagnosis_id", function (req, res) {
+  Diagnosis.updateOne(
+    { _id: req.params.diagnosis_id },
+    {
+      date: req.body.date,
+      diagnosis: req.body.diagnosis,
+    },
+    function (err) {
+      if (err) {
+        console.log(err);
+      }
+    }
+  );
+  Patient.findOneAndUpdate(
+    { _id: req.params.patient_id, "history._id": req.params.diagnosis_id },
+    {
+      $set: {
+        "history.$.date": req.body.date,
+        "history.$.diagnosis": req.body.diagnosis,
+      },
+    },
+    function (err, result) {
+      if (err) {
+        console.log(err);
+      }
+    }
+  );
+  res.redirect("/patients");
+});
 
 app.get("*", function (req, res) {
   res.render("404");
