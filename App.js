@@ -118,7 +118,6 @@ app.post("/diagnosis", function (req, res) {
     diagnosis: req.body.diagnosis,
   });
   diagnosis.save();
-  console.log(req.body.id);
   Patient.updateOne(
     { _id: req.body.id },
     { $push: { history: diagnosis } },
@@ -144,7 +143,6 @@ app.get("/diagnosis/edit/:patient_id/:diagnosis_id", function (req, res) {
     });
   });
 });
-// tbe
 app.put("/diagnosis/edit/:patient_id/:diagnosis_id", function (req, res) {
   Diagnosis.updateOne(
     { _id: req.params.diagnosis_id },
@@ -172,6 +170,28 @@ app.put("/diagnosis/edit/:patient_id/:diagnosis_id", function (req, res) {
       }
     }
   );
+  res.redirect("/patients");
+});
+app.delete("/diagnosis/delete/:patient_id/:diagnosis_id", function (req, res) {
+  Patient.findByIdAndUpdate(
+    req.params.patient_id,
+    {
+      $pull: {
+        history: { _id: req.params.diagnosis_id },
+      },
+    },
+    function (err, result) {
+      if (!err) {
+        console.log(result);
+      }
+    }
+  );
+
+  Diagnosis.deleteOne({ _id: req.params.diagnosis_id }, function (err, result) {
+    if (!err) {
+      console.log(result);
+    }
+  });
   res.redirect("/patients");
 });
 

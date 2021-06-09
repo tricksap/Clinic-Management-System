@@ -84,8 +84,10 @@
             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
                 <div class="dropdown-header">Actions</div>
                 <a class="dropdown-item" href="/diagnosis/edit/<%=patient._id%>/<%=history._id%>">Edit</a>
-                <a class="dropdown-item text-danger">Delete</a>
-            </div>
+                <form action="/diagnosis/delete/<%=patient._id%>/<%=history._id%>?_method=DELETE" method="POST">
+                  <button type="submit"  class="dropdown-item text-danger">Delete</button>
+                </form>
+              </div>
         </div>
     </div>
       <div class="card-body">
