@@ -38,7 +38,7 @@ app.use(methodOverride("_method"));
 app.get("/", function (req, res) {
   res.render("login");
 });
-
+// patient
 app.get("/home", function (req, res) {
   res.render("index");
 });
@@ -195,6 +195,10 @@ app.delete("/diagnosis/delete/:patient_id/:diagnosis_id", function (req, res) {
   res.redirect("/patients");
 });
 
+// appontment
+app.get("/appointment", function (req, res) {
+  res.render("appointment/list");
+});
 app.get("*", function (req, res) {
   res.render("404");
 });

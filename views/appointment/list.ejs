@@ -1,0 +1,36 @@
+<%- include('../partials/header'); -%>
+<div class="">
+  <h1 class="h3 mb-4 text-gray-800">Appointments
+  <a href="#" class="btn btn-success btn-icon-split btn-sm">
+    <span class="icon text-white-50">
+      <i class="fas fa-plus"></i>
+    </span>
+    <span class="text">Add Event</span>
+</a>
+</h1>
+</div>
+<div id="calendar"></div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var calendarEl = document.getElementById("calendar");
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      
+
+      contentHeight: 500,
+      themeSystem: "bootstrap",
+      nowIndicator: true,
+      initialView: "dayGridMonth",
+      selectable: true,
+      headerToolbar: {
+        left: "prev,next today",
+        center: "title",
+        right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+      },
+
+      events: [],
+    });
+    calendar.render();
+  });
+</script>
+
+<%- include('../partials/footer'); -%>
