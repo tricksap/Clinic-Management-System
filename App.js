@@ -26,6 +26,12 @@ const patientSchema = new mongoose.Schema({
   address: String,
   history: [diagnosisSchema],
 });
+const appointmentSchema = new mongoose.Schema({
+  title: String,
+  start: Date,
+  end: Date
+})
+const Appointment = mongoose.model("appointment", appointmentSchema);
 const Diagnosis = mongoose.model("diagnosis", diagnosisSchema);
 const Patient = mongoose.model("patient", patientSchema);
 
@@ -195,10 +201,28 @@ app.delete("/diagnosis/delete/:patient_id/:diagnosis_id", function (req, res) {
   res.redirect("/patients");
 });
 
-// appontment
+// appointment
 app.get("/appointment", function (req, res) {
-  res.render("appointment/list");
+  Appointment.find({},function(err,result){
+    res.render("appointment/list", {result: result});
+  })
 });
+app.post("/appointment", function (req,res){
+  const appointment = new Appointment({
+    title:req.body.title,
+    start: req.body.startDate +" " +req.body.startTime,
+    end: req.body.endDate +" " +req.body.endTime,
+  });
+  appointment.save();
+  res.redirect("/appointment")
+});
+
+
+// medicine
+app.get("/medicine", function(req,res){
+  res.render("medicine/table")
+})
+
 app.get("*", function (req, res) {
   res.render("404");
 });

@@ -1,33 +1,77 @@
 <%- include('../partials/header'); -%>
 <div class="">
   <h1 class="h3 mb-4 text-gray-800">Appointments
-  <a href="#" class="btn btn-success btn-icon-split btn-sm">
-    <span class="icon text-white-50">
+  <a href="#" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#exampleModal">
+    <span class="icon">
       <i class="fas fa-plus"></i>
     </span>
-    <span class="text">Add Event</span>
 </a>
 </h1>
+<h1></h1>
 </div>
 <div id="calendar"></div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" >
+  <div class="modal-dialog">
+    <form action="/appointment" method="post">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Appointment</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control" placeholder="Add title" required name="title">
+        <label for="">Stating time</label>
+        <div class="row">
+          <div class="col">
+            <input type="date" class="form-control" name="startDate" required> 
+          </div>
+          <div class="col">
+            <input type="time" class="form-control" name="startTime" required>
+          </div>
+        </div>
+        <label for="">End time</label>
+        <div class="row">
+          <div class="col">
+            <input type="date" class="form-control" name="endDate" required> 
+          </div>
+          <div class="col">
+            <input type="time" class="form-control" name="endTime" required>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </form>
+  </div>
+</div>
+
+<!-- script -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     var calendarEl = document.getElementById("calendar");
     var calendar = new FullCalendar.Calendar(calendarEl, {
       
-
       contentHeight: 500,
       themeSystem: "bootstrap",
       nowIndicator: true,
       initialView: "dayGridMonth",
       selectable: true,
+      dayMaxEvents: true,
+      editable: true,
       headerToolbar: {
         left: "prev,next today",
         center: "title",
         right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
       },
 
-      events: [],
+      events:JSON.parse('<%-JSON.stringify(result)%>')
     });
     calendar.render();
   });
