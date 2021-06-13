@@ -31,6 +31,13 @@ const appointmentSchema = new mongoose.Schema({
   start: Date,
   end: Date
 })
+const medicineSchema = new mongoose.Schema({
+  name: String,
+  type: String,
+  description: String,
+  stocks: Number
+})
+const Medicine = mongoose.model("medicine", medicineSchema);
 const Appointment = mongoose.model("appointment", appointmentSchema);
 const Diagnosis = mongoose.model("diagnosis", diagnosisSchema);
 const Patient = mongoose.model("patient", patientSchema);
@@ -220,8 +227,25 @@ app.post("/appointment", function (req,res){
 
 // medicine
 app.get("/medicine", function(req,res){
-  res.render("medicine/table")
+  Medicine.find({},function(err,result){
+    res.render("medicine/table",{result:result})
+  })
 })
+app.get("/medicine/new", function(req,res){
+  res.render("medicine/new")
+})
+app.post("/medicine/new", function(req,res){
+  const medicine = new Medicine({
+    name: req.body.name,
+    type: req.body.type,
+    description: req.body.description,
+    stocks: req.body.stocks
+  })
+  medicine.save()
+  res.redirect("/medicine")
+
+})
+
 
 app.get("*", function (req, res) {
   res.render("404");

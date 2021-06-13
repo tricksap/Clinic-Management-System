@@ -1,0 +1,52 @@
+<%- include('../partials/header'); -%>
+
+<!-- Page Heading -->
+<h1 class="h3 mb-4 text-gray-800">Blank Page</h1>
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h6 class="m-0 font-weight-bold text-primary">New Medicine</h6>
+  </div>
+  <form action="/medicine/new" method="POST">
+    <div class="card-body">
+      <div class="form-group col-md-10">
+        <label for="inputAddress">Name</label>
+        <input
+          required
+          type="text"
+          class="form-control"
+          name="name"
+        />
+      </div>
+      <div class="form-group col-md-10">
+        <label for="inputAddress">Type</label>
+        <input
+          required
+          type="text"
+          class="form-control"
+          name="type"
+        />
+      </div>
+      <div class="form-group col-md-10">
+        <label for="inputAddress">Description</label>
+        <input
+          required
+          type="text"
+          class="form-control"
+          name="description"
+        />
+      </div>
+      <div class="form-group col-md-2">
+        <label for="inputAddress">Stocks</label>
+        <input
+          required
+          type="number"
+          class="form-control"
+          name="stocks"
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+  </form>
+</div>
+<%- include('../partials/footer'); -%>
