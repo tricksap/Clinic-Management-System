@@ -231,6 +231,27 @@ app.get("/medicine", function(req,res){
     res.render("medicine/table",{result:result})
   })
 })
+
+app.put("/medicine", function(req,res){
+  console.log(req.body)
+  Medicine.updateOne({name:req.body.name},
+  {type:req.body.type, description:req.body.description, stocks: req.body.stocks},
+  function (err, result) {
+    if (!err) {
+      console.log(result);
+    }
+  })
+  res.redirect("/medicine")
+})
+app.delete("/medicine",function(req,res){ 
+  Medicine.deleteOne({name:req.body.delete}, function (err, result) {
+    if (!err) {
+      console.log(result);
+    }
+  }); 
+  res.redirect("/medicine")
+})
+
 app.get("/medicine/new", function(req,res){
   res.render("medicine/new")
 })
