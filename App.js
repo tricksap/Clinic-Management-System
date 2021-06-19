@@ -1,9 +1,29 @@
 const express = require("express");
-let ejs = require("ejs");
+const ejs = require("ejs");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const moment = require("moment");
-var methodOverride = require("method-override");
+const methodOverride = require("method-override");
+const session = require("express-session");
+const passport = require("passport");
+const passportLocalMongoose = require("passport-local-mongoose");
+
+const app = express();
+
+app.set("view engine", "ejs");
+app.use(express.static("public/"));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
+
+app.use(
+  session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 mongoose.connect("mongodb://localhost:27017/clinicDB", {
   useNewUrlParser: true,
@@ -12,7 +32,11 @@ mongoose.connect("mongodb://localhost:27017/clinicDB", {
   useCreateIndex: true,
 });
 
-const app = express();
+const userSchema = new mongoose.Schema({
+  username: String,
+  password: String,
+});
+userSchema.plugin(passportLocalMongoose);
 
 const diagnosisSchema = new mongoose.Schema({
   date: Date,
@@ -29,31 +53,76 @@ const patientSchema = new mongoose.Schema({
 const appointmentSchema = new mongoose.Schema({
   title: String,
   start: Date,
-  end: Date
-})
+  end: Date,
+});
 const medicineSchema = new mongoose.Schema({
   name: String,
   type: String,
   description: String,
-  stocks: Number
-})
+  stocks: Number,
+});
+const User = mongoose.model("User", userSchema);
 const Medicine = mongoose.model("medicine", medicineSchema);
 const Appointment = mongoose.model("appointment", appointmentSchema);
 const Diagnosis = mongoose.model("diagnosis", diagnosisSchema);
 const Patient = mongoose.model("patient", patientSchema);
 
-app.set("view engine", "ejs");
-app.use(express.static("public/"));
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(methodOverride("_method"));
-
+app.get("/register", function (req, res) {
+  res.render("register");
+});
 app.get("/", function (req, res) {
   res.render("login");
 });
+
+app.post("/register", function (req, res) {
+  User.register(
+    { username: req.body.username },
+    req.body.password,
+    function (err, user) {
+      if (err) {
+        console.log(err);
+        res.redirect("/register");
+      } else {
+        passport.authenticate("local")(req, res, function () {
+          res.redirect("/home");
+        });
+      }
+    }
+  );
+});
+app.post("/", function (req, res) {
+  const user = new User({
+    username: req.body.username,
+    password: req.body.password,
+  });
+
+  req.login(user, function (err) {
+    if (err) {
+      console.log(err);
+    } else {
+      passport.authenticate("local")(req, res, function () {
+        res.redirect("/home");
+      });
+    }
+  });
+});
+
+app.get("/logout", function (req, res) {
+  req.logout();
+  res.redirect("/");
+});
+
 // patient
 app.get("/home", function (req, res) {
-  res.render("index");
+  if (req.isAuthenticated()) {
+    res.render("index");
+  } else {
+    res.redirect("/");
+  }
 });
 app.get("/patients", function (req, res) {
   Patient.find({}, function (err, found) {
@@ -210,63 +279,66 @@ app.delete("/diagnosis/delete/:patient_id/:diagnosis_id", function (req, res) {
 
 // appointment
 app.get("/appointment", function (req, res) {
-  Appointment.find({},function(err,result){
-    res.render("appointment/list", {result: result});
-  })
+  Appointment.find({}, function (err, result) {
+    res.render("appointment/list", { result: result });
+  });
 });
-app.post("/appointment", function (req,res){
+app.post("/appointment", function (req, res) {
   const appointment = new Appointment({
-    title:req.body.title,
-    start: req.body.startDate +" " +req.body.startTime,
-    end: req.body.endDate +" " +req.body.endTime,
+    title: req.body.title,
+    start: req.body.startDate + " " + req.body.startTime,
+    end: req.body.endDate + " " + req.body.endTime,
   });
   appointment.save();
-  res.redirect("/appointment")
+  res.redirect("/appointment");
 });
 
-
 // medicine
-app.get("/medicine", function(req,res){
-  Medicine.find({},function(err,result){
-    res.render("medicine/table",{result:result})
-  })
-})
+app.get("/medicine", function (req, res) {
+  Medicine.find({}, function (err, result) {
+    res.render("medicine/table", { result: result });
+  });
+});
 
-app.put("/medicine", function(req,res){
-  console.log(req.body)
-  Medicine.updateOne({name:req.body.name},
-  {type:req.body.type, description:req.body.description, stocks: req.body.stocks},
-  function (err, result) {
+app.put("/medicine", function (req, res) {
+  console.log(req.body);
+  Medicine.updateOne(
+    { name: req.body.name },
+    {
+      type: req.body.type,
+      description: req.body.description,
+      stocks: req.body.stocks,
+    },
+    function (err, result) {
+      if (!err) {
+        console.log(result);
+      }
+    }
+  );
+  res.redirect("/medicine");
+});
+app.delete("/medicine", function (req, res) {
+  Medicine.deleteOne({ name: req.body.delete }, function (err, result) {
     if (!err) {
       console.log(result);
     }
-  })
-  res.redirect("/medicine")
-})
-app.delete("/medicine",function(req,res){ 
-  Medicine.deleteOne({name:req.body.delete}, function (err, result) {
-    if (!err) {
-      console.log(result);
-    }
-  }); 
-  res.redirect("/medicine")
-})
+  });
+  res.redirect("/medicine");
+});
 
-app.get("/medicine/new", function(req,res){
-  res.render("medicine/new")
-})
-app.post("/medicine/new", function(req,res){
+app.get("/medicine/new", function (req, res) {
+  res.render("medicine/new");
+});
+app.post("/medicine/new", function (req, res) {
   const medicine = new Medicine({
     name: req.body.name,
     type: req.body.type,
     description: req.body.description,
-    stocks: req.body.stocks
-  })
-  medicine.save()
-  res.redirect("/medicine")
-
-})
-
+    stocks: req.body.stocks,
+  });
+  medicine.save();
+  res.redirect("/medicine");
+});
 
 app.get("*", function (req, res) {
   res.render("404");
