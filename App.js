@@ -326,6 +326,7 @@ app.delete("/diagnosis/delete/:patient_id/:diagnosis_id", function (req, res) {
 app.get("/appointment", function (req, res) {
   if (req.isAuthenticated()) {
     Appointment.find({}, function (err, result) {
+      result = JSON.parse(JSON.stringify(result).split('"_id":').join('"id":'));
       res.render("appointment/list", { result: result });
     });
   } else {

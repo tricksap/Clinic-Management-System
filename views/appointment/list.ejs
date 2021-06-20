@@ -52,25 +52,47 @@
   </div>
 </div>
 
-<div class="modal" tabindex="-1" role="dialog" id="myDialog">
+<!-- edit modal -->
+<div class="modal fade" id="myModal" tabindex="-1" >
   <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title">Modal Header</h5>
-              <button type="button" data-close aria-label="Close">
-                  <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                  </svg>
-              </button>
-          </div>
-          <div class="modal-body">
-            <h1>My Modal</h1>
-            <button type="button" class="btn" data-close>Close</button>
-          </div>
+    <form action="/appointment" method="post">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
+      <div class="modal-body">
+        <input type="hidden" name="id">
+        <input type="text" class="form-control" placeholder="Add title" required name="title">
+        <label for="">Stating time</label>
+        <div class="row">
+          <div class="col">
+            <input type="date" class="form-control" name="startDate" required> 
+          </div>
+          <div class="col">
+            <input type="time" class="form-control" name="startTime" required>
+          </div>
+        </div>
+        <label for="">End time</label>
+        <div class="row">
+          <div class="col">
+            <input type="date" class="form-control" name="endDate" required> 
+          </div>
+          <div class="col">
+            <input type="time" class="form-control" name="endTime" required>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </form>
   </div>
 </div>
-
 
 <!-- script -->
 <script>
@@ -79,7 +101,19 @@
     var calendarEl = document.getElementById("calendar");
     var calendar = new FullCalendar.Calendar(calendarEl, {
 
-      contentHeight: 500,
+      eventClick: function(info) {
+        $('#myModal').modal('show');
+        let input = document.querySelectorAll("#myModal input")
+        console.log(info.event.end)
+        input[1].setAttribute("value",info.event.title)
+        input[2].setAttribute("value",info.event.start.toISOString().slice(0, 10))
+        input[3].setAttribute("value",info.event.start.toLocaleTimeString('en-GB'))
+        // input[4].setAttribute("value",info.event.end.toISOString().slice(0, 10))
+        // input[5].setAttribute("value",info.event.end.toLocaleTimeString('en-GB'))
+
+  },
+
+      contentHeight: 700,
       themeSystem: "bootstrap",
       nowIndicator: true,
       initialView: "dayGridMonth",
