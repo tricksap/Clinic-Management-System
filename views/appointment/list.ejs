@@ -52,18 +52,19 @@
   </div>
 </div>
 
-<!-- edit modal -->
-<div class="modal fade" id="myModal" tabindex="-1" >
+
+
+<div class="modal fade" id="myModal" tabindex="-1">
   <div class="modal-dialog">
-    <form action="/appointment" method="post">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Edit</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
+      <form action="/appointment?_method=PUT" method="POST">
         <input type="hidden" name="id">
         <input type="text" class="form-control" placeholder="Add title" required name="title">
         <label for="">Stating time</label>
@@ -84,14 +85,29 @@
             <input type="time" class="form-control" name="endTime" required>
           </div>
         </div>
-      </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" class="btn btn-success btn-icon-split">
+          <span class="icon text-white-50">
+              <i class="fas fa-check"></i>
+          </span>
+          <span class="text">Save Changes</span>
+      </a>      </div>
+      </form>
+      <div>
+        <form action="/appointment?_method=DELETE" method="post">
+          <input type="hidden" value="" name="delete">
+          <button type="submit" class="btn btn-danger btn-icon-split">
+            <span class="icon text-white-50">
+                <i class="fas fa-trash"></i>
+            </span>
+            <span class="text">Delete</span>
+        </a>
+        </form>
       </div>
     </div>
-  </form>
   </div>
+</div>
 </div>
 
 <!-- script -->
@@ -104,12 +120,14 @@
       eventClick: function(info) {
         $('#myModal').modal('show');
         let input = document.querySelectorAll("#myModal input")
-        console.log(info.event.end)
+        console.log(input[6])
+        input[0].setAttribute("value",info.event.id)
         input[1].setAttribute("value",info.event.title)
-        input[2].setAttribute("value",info.event.start.toISOString().slice(0, 10))
-        input[3].setAttribute("value",info.event.start.toLocaleTimeString('en-GB'))
-        // input[4].setAttribute("value",info.event.end.toISOString().slice(0, 10))
-        // input[5].setAttribute("value",info.event.end.toLocaleTimeString('en-GB'))
+        input[2].setAttribute("value",info.event._instance.range.start.toISOString().slice(0, 10))
+        input[3].setAttribute("value",info.event._instance.range.start.toISOString().slice(11,19))
+        input[4].setAttribute("value",info.event._instance.range.end.toISOString().slice(0, 10))
+        input[5].setAttribute("value",info.event._instance.range.end.toISOString().slice(11,19))
+        input[6].setAttribute("value",info.event.id)
 
   },
 

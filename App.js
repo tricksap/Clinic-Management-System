@@ -346,6 +346,38 @@ app.post("/appointment", function (req, res) {
     res.redirect("/");
   }
 });
+app.put("/appointment", function (req, res) {
+  if (req.isAuthenticated()) {
+    Appointment.updateOne(
+      { _id: req.body.id },
+      {
+        title: req.body.title,
+        start: req.body.startDate + " " + req.body.startTime,
+        end: req.body.endDate + " " + req.body.endTime,
+      },
+      function (err, result) {
+        if (!err) {
+          console.log(result);
+        }
+      }
+    );
+    res.redirect("/appointment");
+  } else {
+    res.redirect("/");
+  }
+});
+app.delete("/appointment", function (req, res) {
+  if (req.isAuthenticated()) {
+    Appointment.deleteOne({ _id: req.body.delete }, function (err, result) {
+      if (!err) {
+        console.log(result);
+      }
+    });
+    res.redirect("/appointment");
+  } else {
+    res.redirect("/");
+  }
+});
 
 // medicine
 app.get("/medicine", function (req, res) {
