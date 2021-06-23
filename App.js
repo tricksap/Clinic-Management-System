@@ -117,9 +117,16 @@ app.get("/logout", function (req, res) {
 });
 
 // patient
-app.get("/home", function (req, res) {
+app.get("/home", async function (req, res) {
   if (req.isAuthenticated()) {
-    res.render("index");
+    var patient, appointment, medicine;
+    await Patient.countDocuments(function (err, count) {
+      patient = count;
+    });
+    await Medicine.countDocuments(function (err, count) {
+      medicine = count;
+    });
+    res.render("index", { patient: patient, medicine: medicine });
   } else {
     res.redirect("/");
   }
@@ -446,7 +453,11 @@ app.post("/medicine/new", function (req, res) {
 });
 
 app.get("*", function (req, res) {
-  res.render("404");
+  if (req.isAuthenticated()) {
+    res.render("404");
+  } else {
+    res.redirect("/");
+  }
 });
 app.listen(3000, function () {
   console.log("Server Running");
